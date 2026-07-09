@@ -1,16 +1,20 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import pickle
 import tensorflow as tf
 
 # ===============================
 # CARGAR MODELO Y PREPROCESADORES
 # ===============================
 
-modelo = tf.keras.models.load_model("modelo_co.keras")
-imputador = joblib.load("imputador.pkl")
-escalador = joblib.load("escalador.pkl")
-columnas = joblib.load("columnas.pkl")
+with open("imputador.pkl", "rb") as f:
+    imputador = pickle.load(f)
+
+with open("escalador.pkl", "rb") as f:
+    escalador = pickle.load(f)
+
+with open("columnas.pkl", "rb") as f:
+    columnas = pickle.load(f)
 
 # ===============================
 # INTERFAZ WEB
