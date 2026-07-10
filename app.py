@@ -1,19 +1,16 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import tensorflow as tf
 
 # ===============================
 # CARGAR MODELO Y ARCHIVOS
 # ===============================
 
-modelo = tf.keras.models.load_model("modelo_co.keras")
+with open("modelo_rf.pkl", "rb") as f:
+    modelo = pickle.load(f)
 
 with open("imputador.pkl", "rb") as f:
     imputador = pickle.load(f)
-
-with open("escalador.pkl", "rb") as f:
-    escalador = pickle.load(f)
 
 with open("columnas.pkl", "rb") as f:
     columnas = pickle.load(f)
@@ -31,7 +28,7 @@ st.set_page_config(
 st.title("🌫️ Predicción de Monóxido de Carbono")
 
 st.write("""
-Esta aplicación utiliza un modelo de Inteligencia Artificial para predecir la concentración de **CO(GT)** 
+Esta aplicación utiliza un modelo de Machine Learning para predecir la concentración de **CO(GT)** 
 a partir de variables ambientales y sensores químicos.
 """)
 
@@ -47,7 +44,7 @@ for columna in columnas:
     )
 
 # ===============================
-# BOTÓN DE PREDICIÓN
+# BOTÓN DE PREDICCIÓN
 # ===============================
 
 if st.button("Predecir concentración de CO"):
@@ -57,12 +54,11 @@ if st.button("Predecir concentración de CO"):
     # Mantener el mismo orden de columnas usado en entrenamiento
     entrada = entrada[columnas]
 
-    # Aplicar la misma preparación usada en el notebook
+    # Aplicar el mismo imputador usado en el notebook
     entrada_imputada = imputador.transform(entrada)
-    entrada_escalada = escalador.transform(entrada_imputada)
 
-    # Predicción con la red neuronal
-    prediccion = modelo.predict(entrada_escalada)[0][0]
+    # Predicción con Random Forest
+    prediccion = modelo.predict(entrada_imputada)[0]
 
     st.success(f"Predicción estimada de CO(GT): {prediccion:.4f}")
 
